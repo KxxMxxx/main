@@ -16,7 +16,7 @@ import seedu.address.model.tag.Tag;
 public class Activity {
 
     //Identity fields
-    private final Name name;
+    private final Description description;
 
     //Data fields
     private final Location location;
@@ -25,15 +25,15 @@ public class Activity {
     /**
      * Every field must be present and not null.
      */
-    public Activity(Name name, Location location, Set<Tag> tags) {
-        requireAllNonNull(name, location, tags);
-        this.name = name;
+    public Activity(Description description, Location location, Set<Tag> tags) {
+        requireAllNonNull(description, location, tags);
+        this.description = description;
         this.location = location;
         this.tags.addAll(tags);
     }
 
-    public Name getName() {
-        return name;
+    public Description getDescription() {
+        return description;
     }
 
     public Location getLocation() {
@@ -64,7 +64,7 @@ public class Activity {
         }
 
         Activity otherActivity = (Activity) other;
-        return otherActivity.getName().equals(getName())
+        return otherActivity.getDescription().equals(getDescription())
                 && otherActivity.getLocation().equals(getLocation())
                 && otherActivity.getTags().equals(getTags());
     }
@@ -72,13 +72,13 @@ public class Activity {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, location, tags);
+        return Objects.hash(description, location, tags);
     }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getName())
+        builder.append(getDescription())
                 .append(" Location: ")
                 .append(getLocation())
                 .append(" Tags: ");
