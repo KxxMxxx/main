@@ -49,7 +49,7 @@ public class PlannerParserTest {
     @Test
     public void parseCommand_delete() throws Exception {
         DeleteContactCommand command = (DeleteContactCommand) parser.parseCommand(
-                DeleteContactCommand.COMMAND_WORD + " " + DeleteContactCommand.NEXT_COMMAND_WORD + " "
+                DeleteContactCommand.COMMAND_WORD + " " + DeleteContactCommand.SECOND_COMMAND_WORD + " "
                         + INDEX_FIRST_CONTACT.getOneBased());
         assertEquals(new DeleteContactCommand(INDEX_FIRST_CONTACT), command);
     }

@@ -23,13 +23,13 @@ public class DeleteCommandParserTest {
 
     @Test
     public void parse_validArgs_returnsDeleteContactCommand() {
-        assertParseSuccess(parser, DeleteContactCommand.NEXT_COMMAND_WORD + " " + "1",
+        assertParseSuccess(parser, DeleteContactCommand.SECOND_COMMAND_WORD + " " + "1",
                 new DeleteContactCommand(INDEX_FIRST_CONTACT));
     }
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, DeleteContactCommand.NEXT_COMMAND_WORD + " " + "a",
+        assertParseFailure(parser, DeleteContactCommand.SECOND_COMMAND_WORD + " " + "a",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
     }
 }

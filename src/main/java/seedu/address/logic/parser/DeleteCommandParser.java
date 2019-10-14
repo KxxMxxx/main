@@ -39,11 +39,11 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
             Index index = ParserUtil.parseIndex(arguments);
 
             switch(type) {
-            case DeleteContactCommand.NEXT_COMMAND_WORD:
+            case DeleteContactCommand.SECOND_COMMAND_WORD:
                 return new DeleteContactCommand(index);
-            case DeleteDayCommand.NEXT_COMMAND_WORD:
+            case DeleteDayCommand.SECOND_COMMAND_WORD:
                 return new DeleteDayCommand(index);
-            case DeleteActivityCommand.NEXT_COMMAND_WORD:
+            case DeleteActivityCommand.SECOND_COMMAND_WORD:
                 return new DeleteActivityCommand(index);
             default:
                 throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));

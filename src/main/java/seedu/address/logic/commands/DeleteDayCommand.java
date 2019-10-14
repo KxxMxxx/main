@@ -10,12 +10,12 @@ import seedu.address.model.Model;
  * Removes a Day from the itinerary.
  */
 public class DeleteDayCommand extends DeleteCommand {
-    public static final String NEXT_COMMAND_WORD = "day";
+    public static final String SECOND_COMMAND_WORD = "day";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Deletes the day identified by the index number used in the displayed day list.\n"
             + "Parameters: INDEX (must be a positive integer)\n"
-            + "Example: " + DeleteCommand.COMMAND_WORD + " " + NEXT_COMMAND_WORD + " 1";
+            + "Example: " + DeleteCommand.COMMAND_WORD + " " + SECOND_COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_DAY_SUCCESS = "Deleted day: %1$d";
 
