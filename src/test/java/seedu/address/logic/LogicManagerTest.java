@@ -59,7 +59,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_commandExecutionError_throwsCommandException() {
-        String deleteContactCommand = "delete " + DeleteContactCommand.NEXT_COMMAND_WORD + " 9";
+        String deleteContactCommand = "delete " + DeleteContactCommand.SECOND_COMMAND_WORD + " 9";
         assertCommandException(deleteContactCommand, MESSAGE_INVALID_CONTACT_DISPLAYED_INDEX);
     }
 

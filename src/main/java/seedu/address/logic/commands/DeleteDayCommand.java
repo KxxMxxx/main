@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
 /**
@@ -26,9 +25,10 @@ public class DeleteDayCommand extends DeleteCommand {
     }
 
     @Override
-    public CommandResult execute(Model model) throws CommandException {
+    public CommandResult execute(Model model) {
         requireNonNull(model);
-        //to be implemented
+        //check for whether the target index is within the number of days
+        model.deleteDay(targetIndex.getZeroBased());
         return new CommandResult(String.format(MESSAGE_DELETE_DAY_SUCCESS, targetIndex));
     }
 
