@@ -21,7 +21,7 @@ public class DeleteActivityCommand extends DeleteCommand {
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + DeleteCommand.COMMAND_WORD + " " + SECOND_COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted Activity: %1$s";
+    public static final String MESSAGE_DELETE_ACTIVITY_SUCCESS = "Deleted Activity: %1$s";
 
     private final Index targetIndex;
 
@@ -41,7 +41,7 @@ public class DeleteActivityCommand extends DeleteCommand {
 
         Activity activityToDelete = lastShownList.get(targetIndex.getZeroBased());
         model.deleteActivity(activityToDelete);
-        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, activityToDelete));
+        return new CommandResult(String.format(MESSAGE_DELETE_ACTIVITY_SUCCESS, activityToDelete));
     }
 
     @Override
