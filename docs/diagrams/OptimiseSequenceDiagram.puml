@@ -61,12 +61,6 @@ activate ModelManager
 ModelManager --> OptimiseBudgetCommand
 deactivate ModelManager
 
-OptimiseBudgetCommand -> Day : get()
-activate Day
-
-Day --> OptimiseBudgetCommand
-deactivate Day
-
 OptimiseBudgetCommand -> Day : optimiseBudget()
 activate Day
 

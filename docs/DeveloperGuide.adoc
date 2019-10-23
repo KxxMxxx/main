@@ -243,10 +243,10 @@ _{Explain here how the data encryption feature will be implemented}_
 
 // end::dataencryption[]
 
-=== [Proposed] Schedule version comparison
+=== [Proposed] Schedule optimisation
 ==== Proposed Implementation
 
-The proposed schedule version comparison feature utilises `TimeTable` and allows the user to schedule multiple activities within the same time slot. Additionally, the following command is supported:
+The proposed schedule optimisation feature utilises `TimeTable` and allows the user to schedule multiple activities within the same time slot. The following command is supported:
 
 * optimise budget INDEX_OF_DAY -- optimises and brings activities with the lowest cost into focus. This operation supports activities with or without a cost. Activities without a cost has a default cost of $0.00.
 
@@ -263,13 +263,13 @@ Step 2. User adds another activity without a cost:
 
 Step 3. User schedules the first activity into a day:
 
-* `schedule 1 st/1300 et/1400 d/1`
+* `schedule activity 1 st/1300 et/1400 d/1`
 
 Step 4. User schedules the second activity into the same day:
 
-* `schedule 2 st/1300 et/1400 d/1`
+* `schedule activity 2 st/1300 et/1400 d/1`
 
-Step 5. User executes `optimise budget` command. The activities in that day would be shown in a way such that the activities with the lowest costs are in focus.
+Step 6. User executes `optimise budget` command. The activities in that day would be shown in a way such that the activities with the lowest costs are in focus.
 
 Shown below is a summary of the execution of the command.
 
