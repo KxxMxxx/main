@@ -5,10 +5,14 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,6 +22,7 @@ import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
+import seedu.address.model.itineraryitem.ItineraryItem;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.itineraryitem.activity.Activity;
 
@@ -36,6 +41,8 @@ public class ModelManager implements Model {
     private final FilteredList<Activity> filteredActivities;
     private final FilteredList<Contact> filteredContacts;
     private final FilteredList<Day> filteredItinerary;
+    private final HashMap<Contact, List<ItineraryItem>> contactMap;
+    private final HashMap<ItineraryItem, Contact> itineraryItemMap;
 
     /**
      * Initializes a ModelManager with the given address and userPrefs.
@@ -57,11 +64,106 @@ public class ModelManager implements Model {
         filteredActivities = new FilteredList<>(this.activities.getActivityList());
         filteredContacts = new FilteredList<>(this.contacts.getContactList());
         filteredItinerary = new FilteredList<>(this.itinerary.getItinerary());
+        contactMap = new HashMap<>();
+        itineraryItemMap = new HashMap<>();
+        initMap();
     }
 
     public ModelManager() {
         this(new AccommodationManager(), new ActivityManager(), new ContactManager(), new Itinerary(), new UserPrefs());
     }
+
+    //=========== Mapping ====================================================================================
+
+    /**
+     * Initiates mapping of {@code ItineraryItem} to {@code Contact}, vice versa.
+     */
+    private void initMap() {
+        populateMap(accommodations.getAccommodationList());
+        populateMap(activities.getActivityList());
+    }
+
+    /**
+     * Iterates through the {@code List} of {@code ItineraryItem} and creates a mapping between it's {@code Contact},
+     * if it possesses one, to itself.
+     */
+    private void populateMap(List<? extends ItineraryItem> list) {
+        for (ItineraryItem item : list) {
+            if (item.getContact().isPresent()) {
+                Contact contact = getContactByPhone(item.getContact().get().getPhone()).get();
+                if (contactMap.containsKey(contact)) {
+                    contactMap.get(contact).add(item);
+                } else {
+                    contactMap.put(contact, new ArrayList<>((Arrays.asList(item))));
+                }
+                itineraryItemMap.put(item, contact);
+            }
+        }
+    }
+
+    /**
+     * Creates a mapping between an {@code ItineraryItem} and it's {@code Contact}, if it possesses one
+     */
+    private void createMapping(ItineraryItem item) {
+        if (item.getContact().isPresent()) {
+            Contact contact = item.getContact().get();
+            if (contactMap.containsKey(contact)) {
+                contactMap.get(contact).add(item);
+            } else {
+                contactMap.put(contact, new ArrayList<>((Arrays.asList(item))));
+            }
+            itineraryItemMap.put(item, contact);
+        }
+    }
+
+    /**
+     * Updates the mapping when there is a change to an {@code ItineraryItem}. When the {@code Contact} of the
+     * {@code ItineraryItem} is changed, the {@code Contact} is also updated.
+     */
+    private void updateMapping(ItineraryItem oldItem, ItineraryItem newItem) {
+        if (newItem.getContact().isPresent()) {
+            if (oldItem.getContact().isPresent()) {
+                Contact oldContact = itineraryItemMap.remove(oldItem);
+                List<ItineraryItem> oldList = contactMap.remove(oldContact);
+                Contact newContact = newItem.getContact().get();
+                oldList.set(oldList.indexOf(oldItem), newItem);
+
+                setContact(oldContact, newContact);
+                contactMap.put(newContact, oldList);
+                itineraryItemMap.put(newItem, newContact);
+            } else {
+                createMapping(newItem);
+            }
+        }
+    }
+
+    /**
+     * Updates the mapping when there is a change to a {@code Contact}. When the {@code Contact} changes, the
+     * {@code ItineraryItem}s sharing the same contact is also updated.
+     */
+    private void updateMapping(Contact oldContact, Contact newContact) {
+        if (contactMap.containsKey(oldContact)) {
+            List<ItineraryItem> oldList = contactMap.remove(oldContact);
+            List<ItineraryItem> newList = oldList.stream().map(x -> {
+                if (x instanceof Activity) {
+                    Activity newActivity = new Activity(x.getName(), x.getAddress(), newContact, x.getTags());
+                    activities.setActivity((Activity) x, newActivity);
+                    itineraryItemMap.remove(x);
+                    itineraryItemMap.put(newActivity, newContact);
+                    return newActivity;
+                } else {
+                    Accommodation newAccommodation = new Accommodation(x.getName(), x.getAddress(),
+                            newContact, x.getTags());
+                    accommodations.setAccommodation((Accommodation) x, newAccommodation);
+                    itineraryItemMap.remove(x);
+                    itineraryItemMap.put(newAccommodation, newContact);
+                    return newAccommodation;
+                }
+            }).collect(Collectors.toList());
+            contactMap.put(newContact, newList);
+        }
+    }
+
 
     //=========== UserPrefs ==================================================================================
 
@@ -157,13 +259,14 @@ public class ModelManager implements Model {
     @Override
     public void addAccommodation(Accommodation accommodation) {
         accommodations.addAccommodation(accommodation);
+        createMapping(accommodation);
         updateFilteredAccommodationList(PREDICATE_SHOW_ALL_ACCOMMODATIONS);
     }
 
     @Override
     public void setAccommodation(Accommodation target, Accommodation editedAccommodation) {
         requireAllNonNull(target, editedAccommodation);
-
+        updateMapping(target, editedAccommodation);
         accommodations.setAccommodation(target, editedAccommodation);
     }
 
@@ -193,13 +296,14 @@ public class ModelManager implements Model {
     @Override
     public void addActivity(Activity activity) {
         activities.addActivity(activity);
+        createMapping(activity);
         updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
     }
 
     @Override
     public void setActivity(Activity target, Activity editedActivity) {
         requireAllNonNull(target, editedActivity);
-
+        updateMapping(target, editedActivity);
         activities.setActivity(target, editedActivity);
     }
 
@@ -241,7 +345,7 @@ public class ModelManager implements Model {
     @Override
     public void setContact(Contact target, Contact editedContact) {
         requireAllNonNull(target, editedContact);
-
+        updateMapping(target, editedContact);
         contacts.setContact(target, editedContact);
     }
 
