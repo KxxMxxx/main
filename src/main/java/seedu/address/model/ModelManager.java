@@ -20,6 +20,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
+import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.ItineraryItem;
@@ -43,6 +44,8 @@ public class ModelManager implements Model {
     private final FilteredList<Day> filteredItinerary;
     private final HashMap<Contact, List<ItineraryItem>> contactMap;
     private final HashMap<ItineraryItem, Contact> itineraryItemMap;
+    private final HashMap<Activity, List<Day>> activityDayMap;
+    private final HashMap<Accommodation, List<Day>> accommodationDayMap;
 
     /**
      * Initializes a ModelManager with the given address and userPrefs.
@@ -66,6 +69,8 @@ public class ModelManager implements Model {
         filteredItinerary = new FilteredList<>(this.itinerary.getItinerary());
         contactMap = new HashMap<>();
         itineraryItemMap = new HashMap<>();
+        activityDayMap = new HashMap<>();
+        accommodationDayMap = new HashMap<>();
         initMap();
     }
 
@@ -98,13 +103,17 @@ public class ModelManager implements Model {
                 }
                 itineraryItemMap.put(item, contact);
             }
+            if (item instanceof Activity) {
+                List<Day> days = getDays((Activity) item);
+                activityDayMap.put((Activity) item, days);
+            }
         }
     }
 
     /**
      * Creates a mapping between an {@code ItineraryItem} and it's {@code Contact}, if it possesses one
      */
-    private void createMapping(ItineraryItem item) {
+    private void addItineraryItemMapping(ItineraryItem item) {
         if (item.getContact().isPresent()) {
             Contact contact = item.getContact().get();
             if (contactMap.containsKey(contact)) {
@@ -132,7 +141,22 @@ public class ModelManager implements Model {
                 contactMap.put(newContact, oldList);
                 itineraryItemMap.put(newItem, newContact);
             } else {
-                createMapping(newItem);
+                addItineraryItemMapping(newItem);
+            }
+        }
+        if (oldItem instanceof Activity) {
+            if (activityDayMap.containsKey((Activity) oldItem)) {
+                List<Day> listOfDays = activityDayMap.remove((Activity) oldItem);
+                itinerary.getItinerary().forEach(x -> {
+                    if (listOfDays.contains(x)) {
+                        List<ActivityWithTime> listOfActivityWithTime = x.getListOfActivityWithTime();
+                        int indexOfOldItem = listOfActivityWithTime.indexOf(oldItem);
+                        ActivityWithTime oldActivityWithTime = listOfActivityWithTime.get(indexOfOldItem);
+                        listOfActivityWithTime.set(indexOfOldItem, new ActivityWithTime((Activity) oldItem,
+                                oldActivityWithTime.getStartTime(), oldActivityWithTime.getEndTime()));
+                    }
+                });
+                activityDayMap.put((Activity) newItem, listOfDays);
             }
         }
     }
@@ -150,6 +174,19 @@ public class ModelManager implements Model {
                     activities.setActivity((Activity) x, newActivity);
                     itineraryItemMap.remove(x);
                     itineraryItemMap.put(newActivity, newContact);
+                    if (activityDayMap.containsKey(x)) {
+                        List<Day> listOfDays = activityDayMap.remove(x);
+                        itinerary.getItinerary().forEach(y -> {
+                            if (listOfDays.contains(y)) {
+                                List<ActivityWithTime> listOfActivityWithTime = y.getListOfActivityWithTime();
+                                int indexOfOldItem = listOfActivityWithTime.indexOf(x);
+                                ActivityWithTime oldActivityWithTime = listOfActivityWithTime.get(indexOfOldItem);
+                                listOfActivityWithTime.set(indexOfOldItem, new ActivityWithTime(newActivity,
+                                        oldActivityWithTime.getStartTime(), oldActivityWithTime.getEndTime()));
+                            }
+                        });
+                        activityDayMap.put(newActivity, listOfDays);
+                    }
                     return newActivity;
                 } else {
                     Accommodation newAccommodation = new Accommodation(x.getName(), x.getAddress(),
@@ -259,7 +296,7 @@ public class ModelManager implements Model {
     @Override
     public void addAccommodation(Accommodation accommodation) {
         accommodations.addAccommodation(accommodation);
-        createMapping(accommodation);
+        addItineraryItemMapping(accommodation);
         updateFilteredAccommodationList(PREDICATE_SHOW_ALL_ACCOMMODATIONS);
     }
 
@@ -296,7 +333,7 @@ public class ModelManager implements Model {
     @Override
     public void addActivity(Activity activity) {
         activities.addActivity(activity);
-        createMapping(activity);
+        addItineraryItemMapping(activity);
         updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
     }
 
@@ -405,6 +442,10 @@ public class ModelManager implements Model {
     public boolean hasDay(Day day) {
         requireNonNull(day);
         return itinerary.hasDay(day);
+    }
+
+    public List<Day> getDays(Activity activity) {
+        return itinerary.getDays(activity);
     }
 
     //=========== Filtered List Accessors =============================================================
