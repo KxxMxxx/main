@@ -76,23 +76,10 @@ public class ScheduleCommand extends Command {
         Activity activityToSchedule = lastShownActivities.get(activityIndex.getZeroBased());
         ActivityWithTime activityWithTimeToAdd = new ActivityWithTime(activityToSchedule, startTime, endTime);
 
-        Day editedDay = createScheduledActivityDay(dayToEdit, activityWithTimeToAdd);
-        List<Day> editedDays = new ArrayList<>(lastShownDays);
-        editedDays.set(dayIndex.getZeroBased(), editedDay);
+        model.scheduleActivity(dayToEdit, activityWithTimeToAdd);
 
-        if (!dayToEdit.isSameDay(editedDay) && model.hasDay(editedDay)) {
-            throw new CommandException(MESSAGE_DUPLICATE_DAY);
-        }
-
-        model.setDays(editedDays);
         model.updateFilteredItinerary(PREDICATE_SHOW_ALL_DAYS);
         return new CommandResult(String.format(MESSAGE_SCHEDULE_ACTIVITY_SUCCESS, dayIndex.getOneBased()));
-    }
-
-    private Day createScheduledActivityDay(Day dayToEdit, ActivityWithTime toAdd) throws CommandException {
-        List<ActivityWithTime> activityList = dayToEdit.getListOfActivityWithTime();
-        activityList.add(toAdd);
-        return new Day(activityList);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 
 /**
@@ -40,6 +41,14 @@ public class Day {
      */
     public List<ActivityWithTime> getListOfActivityWithTime() {
         return this.timetable.getActivitiesWithTime();
+    }
+
+    public void addActivityWithTime(ActivityWithTime toAdd) {
+        this.timetable.addActivityWithTime(toAdd);
+    }
+
+    public void removeActivityWithTime(Index toRemove) {
+        this.timetable.removeActivityWithTime(toRemove);
     }
 
     /**

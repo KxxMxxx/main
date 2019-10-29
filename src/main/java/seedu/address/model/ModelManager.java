@@ -14,8 +14,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.core.index.Index;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
+import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
@@ -301,6 +303,16 @@ public class ModelManager implements Model {
     public boolean hasDay(Day day) {
         requireNonNull(day);
         return itinerary.hasDay(day);
+    }
+
+    @Override
+    public void scheduleActivity(Day day, ActivityWithTime toAdd) {
+        day.addActivityWithTime(toAdd);
+    }
+
+    @Override
+    public void unscheduleActivity(Day day, Index toRemove) {
+        day.removeActivityWithTime(toRemove);
     }
 
     //=========== Filtered List Accessors =============================================================

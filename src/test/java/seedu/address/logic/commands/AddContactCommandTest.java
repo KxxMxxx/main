@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.ContactManager;
 import seedu.address.model.Model;
@@ -28,6 +29,7 @@ import seedu.address.model.ReadOnlyItinerary;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
+import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
@@ -291,6 +293,14 @@ public class AddContactCommandTest {
         }
 
         public void setDays(List<Day> days) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        public void scheduleActivity(Day day, ActivityWithTime toAdd) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        public void unscheduleActivity(Day day, Index toRemove) {
             throw new AssertionError("This method should not be called.");
         }
 

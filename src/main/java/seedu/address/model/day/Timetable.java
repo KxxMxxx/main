@@ -3,6 +3,7 @@ package seedu.address.model.day;
 import java.util.ArrayList;
 import java.util.List;
 
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 
 /**
@@ -23,6 +24,14 @@ public class Timetable {
 
     public List<ActivityWithTime> getActivitiesWithTime() {
         return new ArrayList<>(this.timetable);
+    }
+
+    public void addActivityWithTime(ActivityWithTime toAdd) {
+        this.timetable.add(toAdd);
+    }
+
+    public void removeActivityWithTime(Index toRemove) {
+        this.timetable.remove(toRemove.getZeroBased());
     }
 
     @Override

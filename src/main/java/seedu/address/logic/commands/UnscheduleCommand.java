@@ -1,12 +1,10 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.core.Messages.MESSAGE_ACTIVITY_NOT_PRESENT_IN_DAY;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DAY;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_DAYS;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import seedu.address.commons.core.Messages;
@@ -15,7 +13,6 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
-import seedu.address.model.itineraryitem.activity.Activity;
 
 /**
  * Unschedules an activity from the day by time.
@@ -38,8 +35,8 @@ public class UnscheduleCommand extends Command {
     private final Index dayIndex;
 
     /**
-     * @param activityIndex of the contacts in the filtered contacts list to edit
-     * @param dayIndex      of the contacts in the filtered contacts list to edit
+     * @param activityIndex of the {@code ActivityWithTime} in the {@code Day} to edit
+     * @param dayIndex      of the {@code Day} in the {@code Itinerary} to edit
      */
     public UnscheduleCommand(Index activityIndex, Index dayIndex) {
         requireAllNonNull(activityIndex, dayIndex);
@@ -51,19 +48,15 @@ public class UnscheduleCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         List<Day> lastShownDays = model.getFilteredItinerary();
-        List<Activity> lastShownActivities = model.getFilteredActivityList();
+        Day dayToEdit = lastShownDays.get(dayIndex.getZeroBased());
+        List<ActivityWithTime> activitiesInDay = dayToEdit.getListOfActivityWithTime();
 
-        if (activityIndexToUnschedule.getZeroBased() >= lastShownActivities.size()) {
+        if (activityIndexToUnschedule.getZeroBased() >= activitiesInDay.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_ACTIVITY_DISPLAYED_INDEX);
         }
 
-        Activity activityToUnschedule = lastShownActivities.get(activityIndexToUnschedule.getZeroBased());
-        Day dayToEdit = lastShownDays.get(dayIndex.getZeroBased());
-        Day editedDay = createUnscheduledActivityDay(dayToEdit, activityToUnschedule);
-        List<Day> editedDays = new ArrayList<>(lastShownDays);
-        editedDays.set(dayIndex.getZeroBased(), editedDay);
+        model.unscheduleActivity(dayToEdit, activityIndexToUnschedule);
 
-        model.setDays(editedDays);
         model.updateFilteredItinerary(PREDICATE_SHOW_ALL_DAYS);
         return new CommandResult(String.format(MESSAGE_UNSCHEDULE_TIME_SUCCESS, activityIndexToUnschedule.getOneBased(),
                 dayIndex.getOneBased()));
@@ -76,28 +69,5 @@ public class UnscheduleCommand extends Command {
                 && this.dayIndex.equals(((UnscheduleCommand) other).dayIndex)
                 && this.activityIndexToUnschedule.equals(((
                 UnscheduleCommand) other).activityIndexToUnschedule));
-    }
-
-    /**
-     * Creates a new day without the activity that is unscheduled.
-     *
-     * @param dayToEdit            of the contacts in the filtered contacts list to edit
-     * @param activityToUnschedule of the contacts in the filtered contacts list to edit
-     */
-    private Day createUnscheduledActivityDay(Day dayToEdit, Activity activityToUnschedule) throws CommandException {
-        List<ActivityWithTime> activitiesWithTime = dayToEdit.getListOfActivityWithTime();
-        List<ActivityWithTime> copiedActivitiesWithTime = new ArrayList<>(activitiesWithTime);
-        boolean removedAtLeastOne = false;
-        for (ActivityWithTime a: activitiesWithTime) {
-            if (a.getActivity().equals(activityToUnschedule)) {
-                copiedActivitiesWithTime.remove(a);
-                removedAtLeastOne = true;
-            }
-        }
-        if (removedAtLeastOne) {
-            return new Day(copiedActivitiesWithTime);
-        } else {
-            throw new CommandException(MESSAGE_ACTIVITY_NOT_PRESENT_IN_DAY);
-        }
     }
 }

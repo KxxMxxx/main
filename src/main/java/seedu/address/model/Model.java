@@ -8,8 +8,10 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.commons.core.index.Index;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
+import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
@@ -293,6 +295,10 @@ public interface Model {
     void addDays(int n);
 
     void setDays(List<Day> itinerary);
+
+    void scheduleActivity(Day day, ActivityWithTime toAdd);
+
+    void unscheduleActivity(Day day, Index toRemove);
 
     /**
      * Returns an unmodifiable view of the filtered itinerary
