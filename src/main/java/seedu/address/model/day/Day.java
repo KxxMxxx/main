@@ -42,10 +42,6 @@ public class Day {
         return this.timetable.getActivitiesWithTime();
     }
 
-    public Optional<ActivityWithTime> getActivityWithTime(LocalTime time) {
-        return this.timetable.getActivityWithTimeAtTime(time);
-    }
-
     /**
      * Returns true if a given string is a valid integer.
      */
