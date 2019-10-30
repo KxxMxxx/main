@@ -163,6 +163,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void addAccommodationAtIndex(Index index, Accommodation accommodation) {
+        accommodations.addAccommodationAtIndex(index, accommodation);
+        updateFilteredAccommodationList(PREDICATE_SHOW_ALL_ACCOMMODATIONS);
+    }
+
+    @Override
     public void setAccommodation(Accommodation target, Accommodation editedAccommodation) {
         requireAllNonNull(target, editedAccommodation);
 
@@ -195,6 +201,12 @@ public class ModelManager implements Model {
     @Override
     public void addActivity(Activity activity) {
         activities.addActivity(activity);
+        updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
+    }
+
+    @Override
+    public void addActivityAtIndex(Index index, Activity activity) {
+        activities.addActivityAtIndex(index, activity);
         updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
     }
 
@@ -238,6 +250,12 @@ public class ModelManager implements Model {
     public void addContact(Contact contact) {
         contacts.addContact(contact);
         updateFilteredContactList(PREDICATE_SHOW_ALL_CONTACTS);
+    }
+
+    @Override
+    public void addContactAtIndex(Index index, Contact contact) {
+        contacts.addContactAtIndex(index, contact);
+        updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
     }
 
     @Override

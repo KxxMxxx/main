@@ -122,6 +122,12 @@ public interface Model {
     void addAccommodation(Accommodation accommodation);
 
     /**
+     * Adds the given accommodation to a specific index.
+     * {@code accommodation} must not already exist in the AccommodationManager.
+     */
+    void addAccommodationAtIndex(Index index, Accommodation accommodation);
+
+    /**
      * Replaces the given accommodation {@code target} with {@code editedAccommodation}.
      * {@code target} must exist in the AccommodationManager.
      * The accommodation identity of {@code editedAccommodatino} must not be the same as another existing
@@ -171,6 +177,12 @@ public interface Model {
     void addActivity(Activity activity);
 
     /**
+     * Adds the given activity to a specific index.
+     * {@code activity} must not already exist in the ActivityManager.
+     */
+    void addActivityAtIndex(Index index, Activity activity);
+
+    /**
      * Replaces the given activity {@code target} with {@code editedActivity}.
      * {@code target} must exist in the ActivityManager.
      * The activity identity of {@code editedActivity} must not be the same as another existing activities in the
@@ -214,15 +226,21 @@ public interface Model {
 
     /**
      * Deletes the given contacts.
-     * The contacts must exist in the contact list.
+     * The contact must exist in the contact list.
      */
     void deleteContact(Contact target);
 
     /**
-     * Adds the given contacts.
-     * {@code contacts} must not already exist in the contact list.
+     * Adds the given contact.
+     * {@code contact} must not already exist in the contact list.
      */
     void addContact(Contact contact);
+
+    /**
+     * Adds the given contact to a specific index.
+     * {@code contact} must not already exist in the contact list.
+     */
+    void addContactAtIndex(Index index, Contact contact);
 
     /**
      * Replaces the given contacts {@code target} with {@code editedContact}.

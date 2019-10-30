@@ -10,7 +10,7 @@ import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
-import seedu.address.testutil.ContactBuilder;
+import seedu.address.testutil.contact.ContactBuilder;
 
 /**
  * A utility class to help with building Accommodation objects.
@@ -20,12 +20,9 @@ public class AccommodationBuilder {
     public static final String DEFAULT_NAME = "Alice Pauline Home";
     public static final String DEFAULT_ADDRESS = "123, Jurong West Ave 6, #08-111";
 
-    public static final String DEFAULT_ACCOMMODATION_NAME = "Sam Smith";
     public static final String DEFAULT_ACCOMMODATION_PHONE = "91170081";
     public static final String DEFAULT_ACCOMMODATION_EMAIL = "sam1987@gmail.com";
-    public static final String DEFAULT_ACCOMMODATION_ADDRESS = "456, Bukit Batok st 53, #03-21";
     public static final String DEFAULT_COST = "1.00";
-
     public static final String[] DEFAULT_ACCOMMODATION_TAGS = {"Jurong", "Cool", "Cheap"};
 
     private Name name;
@@ -37,8 +34,8 @@ public class AccommodationBuilder {
     public AccommodationBuilder() {
         name = new Name(DEFAULT_NAME);
         address = new Address(DEFAULT_ADDRESS);
-        contact = new ContactBuilder().withName(DEFAULT_ACCOMMODATION_NAME).withPhone(DEFAULT_ACCOMMODATION_PHONE)
-                .withEmail(DEFAULT_ACCOMMODATION_EMAIL).withAddress(DEFAULT_ACCOMMODATION_ADDRESS).build();
+        contact = new ContactBuilder().withName(DEFAULT_NAME).withPhone(DEFAULT_ACCOMMODATION_PHONE)
+                .withEmail(DEFAULT_ACCOMMODATION_EMAIL).withAddress(DEFAULT_ADDRESS).build();
         cost = new Cost(DEFAULT_COST);
         tags = SampleDataUtil.getTagSet(DEFAULT_ACCOMMODATION_TAGS);
     }
@@ -71,7 +68,7 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Phone} of the {@code Accommodation} that we are building.
+     * Sets the {@code Contact} of the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withContact(String name, String phone, String email, String address, String... tags) {
         this.contact = new ContactBuilder().withName(name).withEmail(email)
@@ -80,7 +77,9 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Phone} of the {@code Accommodation} that we are building.
+     * Sets the {@code Contact} of the {@code Accommodation} that we are building.
+     * @param contact new contact to be set.
+     * @return
      */
     public AccommodationBuilder withContact(Contact contact) {
         this.contact = contact;
@@ -96,7 +95,7 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Parses the {@code tags} into a {@code Set<Tag>} and set it to the {@code Contact} that we are building.
+     * Parses the {@code tags} into a {@code Set<Tag>} and set it to the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withTags(String ... tags) {
         this.tags = SampleDataUtil.getTagSet(tags);
