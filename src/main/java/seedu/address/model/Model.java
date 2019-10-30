@@ -296,6 +296,8 @@ public interface Model {
 
     void setDays(List<Day> itinerary);
 
+    void setDay(Day oldDay, Day newDay);
+
     void scheduleActivity(Day day, ActivityWithTime toAdd);
 
     void unscheduleActivity(Day day, Index toRemove);

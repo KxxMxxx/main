@@ -9,6 +9,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
+import seedu.address.model.field.Cost;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 
 /**
@@ -53,7 +54,8 @@ public class AddAccommodationCommand extends AddCommand {
         if (toAdd.getContact().isPresent()) {
             if (model.hasPhone(toAdd.getContact().get().getPhone())) {
                 Contact contact = model.getContactByPhone(toAdd.getContact().get().getPhone()).get();
-                model.addAccommodation(new Accommodation(toAdd.getName(), toAdd.getAddress(), contact,
+                Cost cost = toAdd.getCost().isPresent() ? toAdd.getCost().get() : null;
+                model.addAccommodation(new Accommodation(toAdd.getName(), toAdd.getAddress(), contact, cost,
                         toAdd.getTags()));
             } else {
                 model.addAccommodation(toAdd);

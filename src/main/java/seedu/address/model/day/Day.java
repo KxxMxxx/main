@@ -1,11 +1,9 @@
 package seedu.address.model.day;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.logic.commands.exceptions.CommandException;
 
 /**
  * Represents a Day in the travel planner's planner.
@@ -21,7 +19,7 @@ public class Day {
         this.timetable = new Timetable();
     }
 
-    public Day(List<ActivityWithTime> activitiesForDay) throws CommandException {
+    public Day(List<ActivityWithTime> activitiesForDay) {
         this.timetable = new Timetable(activitiesForDay);
     }
 
@@ -49,6 +47,14 @@ public class Day {
 
     public void removeActivityWithTime(Index toRemove) {
         this.timetable.removeActivityWithTime(toRemove);
+    }
+
+    public Optional<ActivityWithTime> findNextActNoOverlap(int index) {
+        return timetable.findNextNoOverlap(index);
+    }
+
+    public List<ActivityWithTime> findAllOverlap(ActivityWithTime activity) {
+        return timetable.findAllOverlap(activity);
     }
 
     /**

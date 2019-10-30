@@ -299,6 +299,10 @@ public class ModelManager implements Model {
         this.itinerary.setDays(itinerary);
     }
 
+    public void setDay(Day oldDay, Day newDay) {
+        this.itinerary.setDay(oldDay, newDay);
+    }
+
     @Override
     public boolean hasDay(Day day) {
         requireNonNull(day);

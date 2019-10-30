@@ -21,6 +21,7 @@ import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
@@ -96,9 +97,12 @@ public class EditAccommodationCommand extends EditCommand {
                 : accommodationToEdit.getContact().isPresent()
                 ? accommodationToEdit.getContact().get()
                 : null;
+        Cost updatedCost = editAccommodationDescriptor.getCost().isPresent()
+                ? editAccommodationDescriptor.getCost().get()
+                : null;
         Set<Tag> updatedTags = editAccommodationDescriptor.getTags().orElse(accommodationToEdit.getTags());
 
-        return new Accommodation(updatedName, updatedAddress, updatedContact, updatedTags);
+        return new Accommodation(updatedName, updatedAddress, updatedContact, updatedCost, updatedTags);
     }
 
     @Override
@@ -128,6 +132,7 @@ public class EditAccommodationCommand extends EditCommand {
         private Name name;
         private Address address;
         private Phone phone;
+        private Cost cost;
         private Set<Tag> tags;
 
         public EditAccommodationDescriptor() {}
@@ -136,6 +141,7 @@ public class EditAccommodationCommand extends EditCommand {
             setName(toCopy.name);
             setAddress(toCopy.address);
             setPhone(toCopy.phone);
+            setCost(toCopy.cost);
             setTags(toCopy.tags);
         }
 
@@ -167,6 +173,14 @@ public class EditAccommodationCommand extends EditCommand {
             return Optional.ofNullable(phone);
         }
 
+        public void setCost(Cost cost) {
+            this.cost = cost;
+        }
+
+        public Optional<Cost> getCost() {
+            return Optional.ofNullable(cost);
+        }
+
         public void setTags(Set<Tag> tags) {
             this.tags = (tags != null) ? new HashSet<>(tags) : null;
         }
@@ -193,6 +207,7 @@ public class EditAccommodationCommand extends EditCommand {
             return getName().equals(e.getName())
                     && getPhone().equals(e.getPhone())
                     && getAddress().equals(e.getAddress())
+                    && getCost().equals(e.getCost())
                     && getTags().equals(e.getTags());
         }
     }

@@ -2,9 +2,10 @@ package seedu.address.model.day;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.logic.commands.exceptions.CommandException;
 
 /**
  * Represents the timetable of a {@code Day}.
@@ -26,12 +27,38 @@ public class Timetable {
         return new ArrayList<>(this.timetable);
     }
 
+    /**
+     * Adds an activity with time to the list.
+     */
     public void addActivityWithTime(ActivityWithTime toAdd) {
         this.timetable.add(toAdd);
+        timetable.sort(ActivityWithTime::compareTo);
     }
 
     public void removeActivityWithTime(Index toRemove) {
         this.timetable.remove(toRemove.getZeroBased());
+    }
+
+    /**
+     * Find the next activity in the list such that there is no overlaps unless the activity is the last in the list.
+     */
+    public Optional<ActivityWithTime> findNextNoOverlap(int index) {
+        ActivityWithTime currAct = timetable.get(index);
+        for (int i = index + 1; i < timetable.size(); i++) {
+            ActivityWithTime nextAct = timetable.get(i);
+            if (!currAct.isOverlapping(nextAct)) {
+                return Optional.of(nextAct);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Finds all activities that overlaps with the current activity.
+     */
+    public List<ActivityWithTime> findAllOverlap(ActivityWithTime activity) {
+        return timetable.stream().filter(x -> x.isOverlapping(activity)
+                && activity.getStartTime().compareTo(x.getStartTime()) <= 0).collect(Collectors.toList());
     }
 
     @Override

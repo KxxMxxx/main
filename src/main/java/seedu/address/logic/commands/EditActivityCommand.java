@@ -21,6 +21,7 @@ import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.tag.Tag;
@@ -94,9 +95,12 @@ public class EditActivityCommand extends EditCommand {
                 : activityToEdit.getContact().isPresent()
                     ? activityToEdit.getContact().get()
                     : null;
+        Cost updatedCost = editActivityDescriptor.getCost().isPresent()
+                ? editActivityDescriptor.getCost().get()
+                : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
 
-        return new Activity(updatedName, updatedAddress, updatedContact, updatedTags);
+        return new Activity(updatedName, updatedAddress, updatedContact, updatedCost, updatedTags);
     }
 
     @Override
@@ -126,6 +130,7 @@ public class EditActivityCommand extends EditCommand {
         private Name name;
         private Address address;
         private Phone phone;
+        private Cost cost;
         private Set<Tag> tags;
 
         public EditActivityDescriptor() {}
@@ -134,6 +139,7 @@ public class EditActivityCommand extends EditCommand {
             setName(toCopy.name);
             setAddress(toCopy.address);
             setPhone(toCopy.phone);
+            setCost(toCopy.cost);
             setTags(toCopy.tags);
         }
 
@@ -163,6 +169,14 @@ public class EditActivityCommand extends EditCommand {
 
         public Optional<Phone> getPhone() {
             return Optional.ofNullable(phone);
+        }
+
+        public void setCost(Cost cost) {
+            this.cost = cost;
+        }
+
+        public Optional<Cost> getCost() {
+            return Optional.ofNullable(cost);
         }
 
         public void setTags(Set<Tag> tags) {

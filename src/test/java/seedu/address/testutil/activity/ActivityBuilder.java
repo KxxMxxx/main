@@ -7,6 +7,7 @@ import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Email;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.tag.Tag;
@@ -25,11 +26,12 @@ public class ActivityBuilder {
     public static final String DEFAULT_CONTACT_PHONE = "91170081";
     public static final String DEFAULT_CONTACT_EMAIL = "sam1987@gmail.com";
     public static final String DEFAULT_CONTACT_ADDRESS = "456, Bukit Batok st 53, #03-21";
-
+    public static final String DEFAULT_COST = "1.00";
 
     private Name name;
     private Contact contact;
     private Address address;
+    private Cost cost;
     private Set<Tag> tags;
 
     public ActivityBuilder() {
@@ -37,6 +39,7 @@ public class ActivityBuilder {
         contact = new Contact(new Name(DEFAULT_CONTACT_NAME), new Phone(DEFAULT_CONTACT_PHONE),
                 new Email(DEFAULT_CONTACT_EMAIL), new Address(DEFAULT_CONTACT_ADDRESS), new HashSet<>());
         address = new Address(DEFAULT_ACTIVITY_ADDRESS);
+        cost = new Cost(DEFAULT_COST);
         tags = new HashSet<>();
     }
 
@@ -47,6 +50,7 @@ public class ActivityBuilder {
         name = activityToCopy.getName();
         address = activityToCopy.getAddress();
         contact = activityToCopy.getContact().orElse(null);
+        cost = activityToCopy.getCost().orElse(null);
         tags = new HashSet<>(activityToCopy.getTags());
     }
 
@@ -83,8 +87,16 @@ public class ActivityBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code Cost} of the {@code Activity} that we are building.
+     */
+    public ActivityBuilder withCost(String cost) {
+        this.cost = new Cost(cost);
+        return this;
+    }
+
     public Activity build() {
-        return new Activity(name, address, contact, tags);
+        return new Activity(name, address, contact, cost, tags);
     }
 
 }

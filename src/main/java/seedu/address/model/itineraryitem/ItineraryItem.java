@@ -10,6 +10,7 @@ import java.util.Set;
 
 import seedu.address.model.contact.Contact;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.tag.Tag;
 
@@ -24,16 +25,18 @@ public abstract class ItineraryItem {
     //Data fields
     private final Address address;
     private final Contact contact;
+    private final Cost cost;
     private final Set<Tag> tags = new HashSet<>();
 
     /**
      * Every field must be present and not null.
      */
-    public ItineraryItem(Name name, Address address, Contact contact, Set<Tag> tags) {
+    public ItineraryItem(Name name, Address address, Contact contact, Cost cost, Set<Tag> tags) {
         requireAllNonNull(name, address, tags);
         this.name = name;
         this.address = address;
         this.contact = contact;
+        this.cost = cost;
         this.tags.addAll(tags);
     }
 
@@ -47,6 +50,10 @@ public abstract class ItineraryItem {
 
     public Optional<Contact> getContact() {
         return Optional.ofNullable(contact);
+    }
+
+    public Optional<Cost> getCost() {
+        return Optional.ofNullable(cost);
     }
 
     /**
@@ -94,6 +101,10 @@ public abstract class ItineraryItem {
                 .append(getContact().isPresent()
                         ? getContact().get()
                         : "")
+                .append(" Cost: $")
+                .append(getCost().isPresent()
+                    ? getCost().get().cost
+                    : "")
                 //note that Contact.toString also has tags
                 .append(" Tags: ");
         getTags().forEach(builder::append);

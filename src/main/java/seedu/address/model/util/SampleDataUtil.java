@@ -33,17 +33,17 @@ public class SampleDataUtil {
     public static Accommodation[] getSampleAccommodations() {
         return new Accommodation[]{
             new Accommodation(new Name("Alex Yeoh"), new Address("Blk 30 Geylang Street 29, #06-40"),
-                    null, getTagSet("friends")),
+                    null, null, getTagSet("friends")),
             new Accommodation(new Name("Bernice Yu"), new Address("Blk 30 Lorong 3 Serangoon Gardens, #07-18"),
-                    null, getTagSet("colleagues", "friends")),
+                    null, null, getTagSet("colleagues", "friends")),
             new Accommodation(new Name("Charlotte Oliveiro"), new Address("Blk 11 Ang Mo Kio Street 74, #11-04"),
-                    null, getTagSet("neighbours")),
+                    null, null, getTagSet("neighbours")),
             new Accommodation(new Name("David Li"), new Address("Blk 436 Serangoon Gardens Street 26, #16-43"),
-                    null, getTagSet("family")),
+                    null, null, getTagSet("family")),
             new Accommodation(new Name("Irfan Ibrahim"), new Address("Blk 47 Tampines Street 20, #17-35"),
-                    null, getTagSet("classmates")),
+                    null, null, getTagSet("classmates")),
             new Accommodation(new Name("Roy Balakrishnan"), new Address("Blk 45 Aljunied Street 85, #11-31"),
-                    null, getTagSet("colleagues"))
+                    null, null, getTagSet("colleagues"))
         };
     }
 
@@ -58,17 +58,17 @@ public class SampleDataUtil {
     public static Activity[] getSampleActivities() {
         return new Activity[]{
             new Activity(new Name("Alex Yeoh"), new Address("Blk 30 Geylang Street 29, #06-40"),
-                    null, getTagSet("friends")),
+                    null, null, getTagSet("friends")),
             new Activity(new Name("Bernice Yu"), new Address("Blk 30 Lorong 3 Serangoon Gardens, #07-18"),
-                    null, getTagSet("colleagues", "friends")),
+                    null, null, getTagSet("colleagues", "friends")),
             new Activity(new Name("Charlotte Oliveiro"), new Address("Blk 11 Ang Mo Kio Street 74, #11-04"),
-                    null, getTagSet("neighbours")),
+                    null, null, getTagSet("neighbours")),
             new Activity(new Name("David Li"), new Address("Blk 436 Serangoon Gardens Street 26, #16-43"),
-                    null, getTagSet("family")),
+                    null, null, getTagSet("family")),
             new Activity(new Name("Irfan Ibrahim"), new Address("Blk 47 Tampines Street 20, #17-35"),
-                    null, getTagSet("classmates")),
+                    null, null, getTagSet("classmates")),
             new Activity(new Name("Roy Balakrishnan"), new Address("Blk 45 Aljunied Street 85, #11-31"),
-                    null, getTagSet("colleagues"))
+                    null, null, getTagSet("colleagues"))
         };
     }
 
@@ -114,7 +114,7 @@ public class SampleDataUtil {
     // Need to add more samples
     public static Day[] getSampleDays() throws CommandException {
         ArrayList<ActivityWithTime> sampleActivities = new ArrayList<>();
-        Activity a = new Activity(new Name("Go Ocean Park"), new Address("Tokyo"), null, getTagSet("epic"));
+        Activity a = new Activity(new Name("Go Ocean Park"), new Address("Tokyo"), null, null, getTagSet("epic"));
         sampleActivities.add(new ActivityWithTime(a, LocalTime.of(10, 30), LocalTime.of(12, 30)));
 
         return new Day[]{

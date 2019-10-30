@@ -8,6 +8,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
+import seedu.address.model.field.Cost;
 import seedu.address.model.itineraryitem.activity.Activity;
 
 /**
@@ -52,8 +53,8 @@ public class AddActivityCommand extends AddCommand {
         if (toAdd.getContact().isPresent()) {
             if (model.hasPhone(toAdd.getContact().get().getPhone())) {
                 Contact contact = model.getContactByPhone(toAdd.getContact().get().getPhone()).get();
-                model.addActivity(new Activity(toAdd.getName(), toAdd.getAddress(), contact,
-                        toAdd.getTags()));
+                Cost cost = toAdd.getCost().isPresent() ? toAdd.getCost().get() : null;
+                model.addActivity(new Activity(toAdd.getName(), toAdd.getAddress(), contact, cost, toAdd.getTags()));
             } else {
                 model.addActivity(toAdd);
             }

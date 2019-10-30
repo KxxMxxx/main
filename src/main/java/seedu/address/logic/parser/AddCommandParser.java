@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_COST;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DAY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -25,6 +26,7 @@ import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Email;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.itineraryitem.activity.Activity;
@@ -81,7 +83,7 @@ public class AddCommandParser implements Parser<AddCommand> {
      */
     private AddAccommodationCommand parseAccommodation(String args) throws ParseException {
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_ADDRESS, PREFIX_PHONE,
-                PREFIX_TAG);
+                PREFIX_COST, PREFIX_TAG);
 
         if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_ADDRESS) || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
@@ -91,14 +93,17 @@ public class AddCommandParser implements Parser<AddCommand> {
         Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get());
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
+        Cost cost = argMultimap.getValue(PREFIX_COST).isPresent()
+                ? ParserUtil.parseCost(argMultimap.getValue(PREFIX_COST).get())
+                : null;
 
         if (argMultimap.getValue(PREFIX_PHONE).isPresent()) {
             Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
             Contact contact = new Contact(name, phone, null, null, new HashSet<Tag>());
-            Accommodation accommodation = new Accommodation(name, address, contact, tagList);
+            Accommodation accommodation = new Accommodation(name, address, contact, cost, tagList);
             return new AddAccommodationCommand(accommodation);
         } else {
-            Accommodation accommodation = new Accommodation(name, address, null, tagList);
+            Accommodation accommodation = new Accommodation(name, address, null, cost, tagList);
             return new AddAccommodationCommand(accommodation);
         }
     }
@@ -110,7 +115,7 @@ public class AddCommandParser implements Parser<AddCommand> {
      */
     private AddActivityCommand parseActivity(String args) throws ParseException {
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_ADDRESS, PREFIX_PHONE,
-                PREFIX_TAG);
+                PREFIX_COST, PREFIX_TAG);
 
         if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_ADDRESS) || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddActivityCommand.MESSAGE_USAGE));
@@ -119,14 +124,17 @@ public class AddCommandParser implements Parser<AddCommand> {
         Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get());
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
+        Cost cost = argMultimap.getValue(PREFIX_COST).isPresent()
+                ? ParserUtil.parseCost(argMultimap.getValue(PREFIX_COST).get())
+                : null;
 
         if (argMultimap.getValue(PREFIX_PHONE).isPresent()) {
             Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
             Contact contact = new Contact(name, phone, null, null, new HashSet<Tag>());
-            Activity activity = new Activity(name, address, contact, tagList);
+            Activity activity = new Activity(name, address, contact, cost, tagList);
             return new AddActivityCommand(activity);
         } else {
-            Activity activity = new Activity(name, address, null, tagList);
+            Activity activity = new Activity(name, address, null, cost, tagList);
             return new AddActivityCommand(activity);
         }
     }

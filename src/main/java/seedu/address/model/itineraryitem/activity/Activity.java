@@ -4,6 +4,7 @@ import java.util.Set;
 
 import seedu.address.model.contact.Contact;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.ItineraryItem;
 import seedu.address.model.tag.Tag;
@@ -17,8 +18,8 @@ public class Activity extends ItineraryItem {
     /**
      * Every field must be present and not null.
      */
-    public Activity(Name name, Address address, Contact contact, Set<Tag> tags) {
-        super(name, address, contact, tags);
+    public Activity(Name name, Address address, Contact contact, Cost cost, Set<Tag> tags) {
+        super(name, address, contact, cost, tags);
     }
 
     /**
@@ -52,6 +53,7 @@ public class Activity extends ItineraryItem {
         return otherActivity.getName().equals(getName())
                 && otherActivity.getAddress().equals(getAddress())
                 && otherActivity.getTags().equals(getTags())
-                && otherActivity.getContact().equals(getContact());
+                && otherActivity.getContact().equals(getContact())
+                && otherActivity.getCost().equals(getCost());
     }
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import seedu.address.model.contact.Contact;
 import seedu.address.model.field.Address;
+import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
@@ -23,12 +24,14 @@ public class AccommodationBuilder {
     public static final String DEFAULT_ACCOMMODATION_PHONE = "91170081";
     public static final String DEFAULT_ACCOMMODATION_EMAIL = "sam1987@gmail.com";
     public static final String DEFAULT_ACCOMMODATION_ADDRESS = "456, Bukit Batok st 53, #03-21";
+    public static final String DEFAULT_COST = "1.00";
 
     public static final String[] DEFAULT_ACCOMMODATION_TAGS = {"Jurong", "Cool", "Cheap"};
 
     private Name name;
     private Address address;
     private Contact contact;
+    private Cost cost;
     private Set<Tag> tags;
 
     public AccommodationBuilder() {
@@ -36,21 +39,23 @@ public class AccommodationBuilder {
         address = new Address(DEFAULT_ADDRESS);
         contact = new ContactBuilder().withName(DEFAULT_ACCOMMODATION_NAME).withPhone(DEFAULT_ACCOMMODATION_PHONE)
                 .withEmail(DEFAULT_ACCOMMODATION_EMAIL).withAddress(DEFAULT_ACCOMMODATION_ADDRESS).build();
+        cost = new Cost(DEFAULT_COST);
         tags = SampleDataUtil.getTagSet(DEFAULT_ACCOMMODATION_TAGS);
     }
 
     /**
-     * Initializes the AccommodationBuilder with the data of {@code contactToCopy}.
+     * Initializes the AccommodationBuilder with the data of {@code accommodationToCopy}.
      */
     public AccommodationBuilder(Accommodation accommodationToCopy) {
         name = accommodationToCopy.getName();
         address = accommodationToCopy.getAddress();
         contact = accommodationToCopy.getContact().orElse(null);
+        cost = accommodationToCopy.getCost().orElse(null);
         tags = new HashSet<>(accommodationToCopy.getTags());
     }
 
     /**
-     * Sets the {@code Name} of the {@code Contact} that we are building.
+     * Sets the {@code Name} of the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withName(String name) {
         this.name = new Name(name);
@@ -58,7 +63,7 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Address} of the {@code Contact} that we are building.
+     * Sets the {@code Address} of the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withAddress(String address) {
         this.address = new Address(address);
@@ -66,7 +71,7 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Phone} of the {@code Contact} that we are building.
+     * Sets the {@code Phone} of the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withContact(String name, String phone, String email, String address, String... tags) {
         this.contact = new ContactBuilder().withName(name).withEmail(email)
@@ -75,10 +80,18 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Phone} of the {@code Contact} that we are building.
+     * Sets the {@code Phone} of the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withContact(Contact contact) {
         this.contact = contact;
+        return this;
+    }
+
+    /**
+     * Sets the {@code Cost} of the {@code Accommodation} that we are building.
+     */
+    public AccommodationBuilder withCost(Cost cost) {
+        this.cost = cost;
         return this;
     }
 
@@ -91,7 +104,7 @@ public class AccommodationBuilder {
     }
 
     public Accommodation build() {
-        return new Accommodation(name, address, contact, tags);
+        return new Accommodation(name, address, contact, cost, tags);
     }
 
 }
