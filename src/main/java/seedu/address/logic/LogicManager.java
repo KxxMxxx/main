@@ -8,11 +8,11 @@ import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
-import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.RedoCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.UndoableCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
 import seedu.address.logic.events.Event;
 import seedu.address.logic.events.EventFactory;
 import seedu.address.logic.events.exceptions.EventException;
@@ -24,10 +24,10 @@ import seedu.address.model.ReadOnlyAccommodation;
 import seedu.address.model.ReadOnlyActivity;
 import seedu.address.model.ReadOnlyContact;
 import seedu.address.model.ReadOnlyItinerary;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.day.Day;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.storage.Storage;
 
 /**

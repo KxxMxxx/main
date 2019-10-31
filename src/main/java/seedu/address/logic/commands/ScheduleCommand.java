@@ -14,10 +14,12 @@ import java.util.List;
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
+import seedu.address.logic.commands.util.HelpExplanation;
 import seedu.address.model.Model;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
-import seedu.address.model.itineraryitem.activity.Activity;
 
 /**
  * Schedules an activity to a day.
@@ -26,21 +28,21 @@ public class ScheduleCommand extends Command {
 
     public static final String COMMAND_WORD = "schedule";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + " "
-            + ": Schedule the activity identified "
+    public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(COMMAND_WORD + " ",
+            ": Schedule the activity identified "
             + "by the index number used in the displayed activity list "
-            + "to a day.\n"
-            + "Parameters: INDEX (must be a positive integer) "
+            + "to a day.\n",
+            COMMAND_WORD + " "
+            + "INDEX (must be a positive integer) "
             + PREFIX_START_TIME + "START_TIME "
             + PREFIX_END_TIME + "END_TIME "
-            + PREFIX_DAY + "DAY_INDEX "
-            + "Example: " + COMMAND_WORD + " 1 "
+            + PREFIX_DAY + "DAY_INDEX ",
+            COMMAND_WORD + " 1 "
             + PREFIX_START_TIME + "1100 "
             + PREFIX_END_TIME + "1300 "
-            + PREFIX_DAY + "2 ";
+            + PREFIX_DAY + "2 ");
 
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activity scheduled to day %d";
-    public static final String MESSAGE_DUPLICATE_DAY = "This day already exists in the planner.";
 
     private final Index activityIndex;
     private final LocalTime startTime;

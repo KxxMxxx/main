@@ -4,7 +4,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.time.LocalTime;
 
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.activity.Activity;
 
 /**
  * Wraps the Activity in an object with time and duration fields.
@@ -45,6 +45,10 @@ public class ActivityWithTime implements Comparable<ActivityWithTime> {
     public boolean equals(Object other) {
         if (other == this) {
             return true;
+        }
+
+        if (other instanceof Activity) {
+            return this.getActivity().equals(other);
         }
 
         if (!(other instanceof ActivityWithTime)) {

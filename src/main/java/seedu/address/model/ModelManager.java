@@ -5,23 +5,27 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.index.Index;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -38,6 +42,12 @@ public class ModelManager implements Model {
     private final FilteredList<Activity> filteredActivities;
     private final FilteredList<Contact> filteredContacts;
     private final FilteredList<Day> filteredItinerary;
+    private final HashMap<Contact, List<Activity>> contactActivityMap;
+    private final HashMap<Contact, List<Accommodation>> contactAccommodationMap;
+    private final HashMap<Activity, Contact> activityContactMap;
+    private final HashMap<Accommodation, Contact> accommodationContactMap;
+    private final HashMap<Activity, List<Day>> activityDayMap;
+    private final HashMap<Accommodation, List<Day>> accommodationDayMap;
 
     /**
      * Initializes a ModelManager with the given address and userPrefs.
@@ -59,10 +69,195 @@ public class ModelManager implements Model {
         filteredActivities = new FilteredList<>(this.activities.getActivityList());
         filteredContacts = new FilteredList<>(this.contacts.getContactList());
         filteredItinerary = new FilteredList<>(this.itinerary.getItinerary());
+        contactActivityMap = new HashMap<>();
+        contactAccommodationMap = new HashMap<>();
+        activityContactMap = new HashMap<>();
+        accommodationContactMap = new HashMap<>();
+        activityDayMap = new HashMap<>();
+        accommodationDayMap = new HashMap<>();
+        initMap();
     }
 
     public ModelManager() {
         this(new AccommodationManager(), new ActivityManager(), new ContactManager(), new Itinerary(), new UserPrefs());
+    }
+
+    //=========== Mapping ====================================================================================
+
+    /**
+     * Initiates mapping of {@code Activity} and {@code Accommodation} to {@code Contact}, vice versa.
+     */
+    private void initMap() {
+        populateActivityMap(this.activities.getActivityList());
+        populateAccommodationMap(this.accommodations.getAccommodationList());
+    }
+
+    /**
+     * Iterates through the {@code List} of {@code Activity} and creates a mapping between it's {@code Contact},
+     * if it possesses one, to itself.
+     */
+    private void populateActivityMap(List<Activity> list) {
+        for (Activity act : list) {
+            if (act.getContact().isPresent()) {
+                Contact contact = getContactByPhone(act.getContact().get().getPhone()).get();
+                if (contactActivityMap.containsKey(contact)) {
+                    contactActivityMap.get(contact).add(act);
+                } else {
+                    contactActivityMap.put(contact, new ArrayList<>(Arrays.asList(act)));
+                }
+                activityContactMap.put(act, contact);
+
+                List<Day> days = getDays(act);
+                activityDayMap.put(act, days);
+            }
+        }
+    }
+
+    /**
+     * Iterates through the {@code List} of {@code Accommodation} and creates a mapping between it's {@code Contact},
+     * if it possesses one, to itself.
+     */
+    private void populateAccommodationMap(List<Accommodation> list) {
+        for (Accommodation acc : list) {
+            if (acc.getContact().isPresent()) {
+                Contact contact = getContactByPhone(acc.getContact().get().getPhone()).get();
+                if (contactAccommodationMap.containsKey(contact)) {
+                    contactAccommodationMap.get(contact).add(acc);
+                } else {
+                    contactAccommodationMap.put(contact, new ArrayList<>(Arrays.asList(acc)));
+                }
+                accommodationContactMap.put(acc, contact);
+            }
+        }
+    }
+
+    /**
+     * Creates a mapping between an {@code Activity} and it's {@code Contact}, if it possesses one.
+     */
+    private void addActivityMapping(Activity act) {
+        if (act.getContact().isPresent()) {
+            Contact contact = act.getContact().get();
+            if (contactActivityMap.containsKey(contact)) {
+                contactActivityMap.get(contact).add(act);
+            } else {
+                contactActivityMap.put(contact, new ArrayList<>((Arrays.asList(act))));
+            }
+            activityContactMap.put(act, contact);
+        }
+    }
+
+    /**
+     * Creates a mapping between an {@code Accommodation} and it's {@code Contact}, if it possesses one.
+     */
+    private void addAccommodationMapping(Accommodation acc) {
+        if (acc.getContact().isPresent()) {
+            Contact contact = acc.getContact().get();
+            if (contactAccommodationMap.containsKey(contact)) {
+                contactAccommodationMap.get(contact).add(acc);
+            } else {
+                contactAccommodationMap.put(contact, new ArrayList<>((Arrays.asList(acc))));
+            }
+            accommodationContactMap.put(acc, contact);
+        }
+    }
+
+    /**
+     * Updates the mapping when there is a change to an {@code Activity}. When the {@code Contact} of the
+     * {@code Activity} is changed, the {@code Contact} is also updated.
+     */
+    private void updateMapping(Activity oldAct, Activity newAct) {
+        if (newAct.getContact().isPresent()) {
+            if (oldAct.getContact().isPresent()) {
+                Contact oldContact = activityContactMap.remove(oldAct);
+                List<Activity> oldList = contactActivityMap.remove(oldContact);
+                Contact newContact = newAct.getContact().get();
+                oldList.set(oldList.indexOf(oldAct), newAct);
+
+                setContact(oldContact, newContact);
+                contactActivityMap.put(newContact, oldList);
+                activityContactMap.put(newAct, newContact);
+            } else {
+                addActivityMapping(newAct);
+            }
+        }
+        if (activityDayMap.containsKey(oldAct)) {
+            List<Day> listOfDays = activityDayMap.remove(oldAct);
+            itinerary.getItinerary().forEach(x -> {
+                if (listOfDays.contains(x)) {
+                    List<ActivityWithTime> listOfActivityWithTime = x.getListOfActivityWithTime();
+                    int indexOfOldAct = listOfActivityWithTime.indexOf(oldAct);
+                    ActivityWithTime oldActivityWithTime = listOfActivityWithTime.get(indexOfOldAct);
+                    listOfActivityWithTime.set(indexOfOldAct, new ActivityWithTime(oldAct,
+                            oldActivityWithTime.getStartTime(), oldActivityWithTime.getEndTime()));
+                }
+            });
+            activityDayMap.put(newAct, listOfDays);
+        }
+    }
+
+    /**
+     * Updates the mapping when there is a change to an {@code Activity}. When the {@code Contact} of the
+     * {@code Activity} is changed, the {@code Contact} is also updated.
+     */
+    private void updateMapping(Accommodation oldAcc, Accommodation newAcc) {
+        if (newAcc.getContact().isPresent()) {
+            if (oldAcc.getContact().isPresent()) {
+                Contact oldContact = activityContactMap.remove(oldAcc);
+                List<Accommodation> oldList = contactAccommodationMap.remove(oldContact);
+                Contact newContact = newAcc.getContact().get();
+                oldList.set(oldList.indexOf(oldAcc), newAcc);
+
+                setContact(oldContact, newContact);
+                contactAccommodationMap.put(newContact, oldList);
+                accommodationContactMap.put(newAcc, newContact);
+            } else {
+                addAccommodationMapping(newAcc);
+            }
+        }
+    }
+
+    /**
+     * Updates the mapping when there is a change to a {@code Contact}. When the {@code Contact} changes, the
+     * {@code Activity} and {@code Accommodation} sharing the same contact is also updated.
+     */
+    private void updateMapping(Contact oldContact, Contact newContact) {
+        if (contactActivityMap.containsKey(oldContact)) {
+            List<Activity> oldList = contactActivityMap.remove(oldContact);
+            List<Activity> newList = oldList.stream().map(x -> {
+                Activity newActivity = new Activity(x.getName(), x.getAddress(), newContact, x.getCost().orElse(null),
+                        x.getTags(), x.getDuration(), x.getPriority());
+                activities.setActivity(x, newActivity);
+                activityContactMap.remove(x);
+                activityContactMap.put(newActivity, newContact);
+                if (activityDayMap.containsKey(x)) {
+                    List<Day> listOfDays = activityDayMap.remove(x);
+                    itinerary.getItinerary().forEach(y -> {
+                        if (listOfDays.contains(y)) {
+                            List<ActivityWithTime> listOfActivityWithTime = y.getListOfActivityWithTime();
+                            int indexOfOldItem = listOfActivityWithTime.indexOf(x);
+                            ActivityWithTime oldActivityWithTime = listOfActivityWithTime.get(indexOfOldItem);
+                            listOfActivityWithTime.set(indexOfOldItem, new ActivityWithTime(newActivity,
+                                    oldActivityWithTime.getStartTime(), oldActivityWithTime.getEndTime()));
+                        }
+                    });
+                    activityDayMap.put(newActivity, listOfDays);
+                }
+                return newActivity;
+            }).collect(Collectors.toList());
+            contactActivityMap.put(newContact, newList);
+        }
+        if (contactAccommodationMap.containsKey(oldContact)) {
+            List<Accommodation> oldList = contactAccommodationMap.remove(oldContact);
+            List<Accommodation> newList = oldList.stream().map(x -> {
+                Accommodation newAccommodation = new Accommodation(x.getName(), x.getAddress(),
+                        newContact, x.getTags());
+                accommodations.setAccommodation(x, newAccommodation);
+                accommodationContactMap.remove(x);
+                accommodationContactMap.put(newAccommodation, newContact);
+                return newAccommodation;
+            }).collect(Collectors.toList());
+            contactAccommodationMap.put(newContact, newList);
+        }
     }
 
     //=========== UserPrefs ==================================================================================
@@ -146,6 +341,11 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public Optional<Index> getAccommodationIndex(Accommodation accommodation) {
+        return accommodations.findAccommodationIndex(accommodation);
+    }
+
+    @Override
     public boolean hasAccommodation(Accommodation accommodation) {
         requireNonNull(accommodation);
         return accommodations.hasAccommodation(accommodation);
@@ -159,6 +359,7 @@ public class ModelManager implements Model {
     @Override
     public void addAccommodation(Accommodation accommodation) {
         accommodations.addAccommodation(accommodation);
+        addAccommodationMapping(accommodation);
         updateFilteredAccommodationList(PREDICATE_SHOW_ALL_ACCOMMODATIONS);
     }
 
@@ -171,7 +372,7 @@ public class ModelManager implements Model {
     @Override
     public void setAccommodation(Accommodation target, Accommodation editedAccommodation) {
         requireAllNonNull(target, editedAccommodation);
-
+        updateMapping(target, editedAccommodation);
         accommodations.setAccommodation(target, editedAccommodation);
     }
 
@@ -188,6 +389,11 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public Optional<Index> getActivityIndex(Activity activity) {
+        return activities.findActivityIndex(activity);
+    }
+
+    @Override
     public boolean hasActivity(Activity activity) {
         requireNonNull(activity);
         return activities.hasActivity(activity);
@@ -201,6 +407,7 @@ public class ModelManager implements Model {
     @Override
     public void addActivity(Activity activity) {
         activities.addActivity(activity);
+        addActivityMapping(activity);
         updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
     }
 
@@ -213,7 +420,7 @@ public class ModelManager implements Model {
     @Override
     public void setActivity(Activity target, Activity editedActivity) {
         requireAllNonNull(target, editedActivity);
-
+        updateMapping(target, editedActivity);
         activities.setActivity(target, editedActivity);
     }
 
@@ -233,6 +440,11 @@ public class ModelManager implements Model {
     public boolean hasContact(Contact contact) {
         requireNonNull(contact);
         return contacts.hasContact(contact);
+    }
+
+    @Override
+    public Optional<Index> getContactIndex(Contact contact) {
+        return contacts.findContactIndex(contact);
     }
 
     @Override
@@ -261,7 +473,7 @@ public class ModelManager implements Model {
     @Override
     public void setContact(Contact target, Contact editedContact) {
         requireAllNonNull(target, editedContact);
-
+        updateMapping(target, editedContact);
         contacts.setContact(target, editedContact);
     }
 
@@ -335,6 +547,10 @@ public class ModelManager implements Model {
     @Override
     public void unscheduleActivity(Day day, Index toRemove) {
         day.removeActivityWithTime(toRemove);
+    }
+
+    public List<Day> getDays(Activity activity) {
+        return itinerary.getDays(activity);
     }
 
     //=========== Filtered List Accessors =============================================================

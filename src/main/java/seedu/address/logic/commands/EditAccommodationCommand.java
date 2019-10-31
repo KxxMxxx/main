@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.commands.util.CommandUtil.findIndexOfAccommodation;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
@@ -17,13 +18,16 @@ import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
+import seedu.address.logic.commands.result.ResultInformation;
+import seedu.address.logic.commands.result.UiFocus;
+import seedu.address.logic.commands.util.HelpExplanation;
 import seedu.address.model.Model;
+import seedu.address.model.accommodation.Accommodation;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
-import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -32,16 +36,20 @@ import seedu.address.model.tag.Tag;
 public class EditAccommodationCommand extends EditCommand {
     public static final String SECOND_COMMAND_WORD = "accommodation";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + " " + SECOND_COMMAND_WORD
-            + ": Edits the details of the accommodation identified "
-            + "by the index number used in the displayed accommodation list. "
-            + "Existing values will be overwritten by the input values.\n"
-            + "Parameters: INDEX (must be a positive integer) "
-            + "[" + PREFIX_NAME + "NAME] "
-            + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Example: " + COMMAND_WORD + " 1 "
-            + PREFIX_PHONE + "91234567 ";
+    public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD,
+            ": Edits the details of the accommodation identified "
+                    + "by the index number used in the displayed accommodation list. "
+                    + "Existing values will be overwritten by the input values.",
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
+                    + "INDEX(must be a positive integer) "
+                    + "[" + PREFIX_NAME + "NAME] "
+                    + "[" + PREFIX_ADDRESS + "ADDRESS] "
+                    + "[" + PREFIX_PHONE + "PHONE] "
+                    + "[" + PREFIX_TAG + "TAG]...",
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD + " 1 "
+                    + PREFIX_PHONE + "91234567 "
+    );
 
     public static final String MESSAGE_EDIT_ACCOMMODATION_SUCCESS = "Edited Accommodation: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
@@ -83,6 +91,7 @@ public class EditAccommodationCommand extends EditCommand {
         }
 
         Accommodation accommodationToEdit = lastShownList.get(index.getZeroBased());
+        Index accommodationToEditIndex = findIndexOfAccommodation(model, accommodationToEdit);
         Accommodation editedAccommodation = createEditedAccommodation(accommodationToEdit, editAccommodationDescriptor);
 
         if (!accommodationToEdit.isSameAccommodation(editedAccommodation)
@@ -92,7 +101,22 @@ public class EditAccommodationCommand extends EditCommand {
 
         model.setAccommodation(accommodationToEdit, editedAccommodation);
         model.updateFilteredAccommodationList(PREDICATE_SHOW_ALL_ACCOMMODATIONS);
-        return new CommandResult(String.format(MESSAGE_EDIT_ACCOMMODATION_SUCCESS, editedAccommodation));
+        Index editedAccommodationIndex = findIndexOfAccommodation(model, editedAccommodation);
+        return new CommandResult(
+            String.format(MESSAGE_EDIT_ACCOMMODATION_SUCCESS, editedAccommodation),
+            new ResultInformation[]{
+                new ResultInformation(
+                    accommodationToEdit,
+                    accommodationToEditIndex,
+                    "Edited Accommodation from:"
+                ),
+                new ResultInformation(
+                    editedAccommodation,
+                    editedAccommodationIndex,
+                    "To:"
+                )
+            },
+            new UiFocus[] { UiFocus.ACCOMMODATION, UiFocus.INFO });
     }
 
     /**
@@ -100,7 +124,7 @@ public class EditAccommodationCommand extends EditCommand {
      * edited with {@code editAccommodationDescriptor}.
      */
     private static Accommodation createEditedAccommodation(Accommodation accommodationToEdit,
-                                                      EditAccommodationDescriptor editAccommodationDescriptor) {
+                                                           EditAccommodationDescriptor editAccommodationDescriptor) {
         assert accommodationToEdit != null;
 
         Name updatedName = editAccommodationDescriptor.getName().orElse(accommodationToEdit.getName());
@@ -110,12 +134,9 @@ public class EditAccommodationCommand extends EditCommand {
                 : accommodationToEdit.getContact().isPresent()
                 ? accommodationToEdit.getContact().get()
                 : null;
-        Cost updatedCost = editAccommodationDescriptor.getCost().isPresent()
-                ? editAccommodationDescriptor.getCost().get()
-                : null;
         Set<Tag> updatedTags = editAccommodationDescriptor.getTags().orElse(accommodationToEdit.getTags());
 
-        return new Accommodation(updatedName, updatedAddress, updatedContact, updatedCost, updatedTags);
+        return new Accommodation(updatedName, updatedAddress, updatedContact, updatedTags);
     }
 
     @Override
@@ -145,7 +166,6 @@ public class EditAccommodationCommand extends EditCommand {
         private Name name;
         private Address address;
         private Phone phone;
-        private Cost cost;
         private Set<Tag> tags;
 
         public EditAccommodationDescriptor() {}
@@ -154,7 +174,6 @@ public class EditAccommodationCommand extends EditCommand {
             setName(toCopy.name);
             setAddress(toCopy.address);
             setPhone(toCopy.phone);
-            setCost(toCopy.cost);
             setTags(toCopy.tags);
         }
 
@@ -186,14 +205,6 @@ public class EditAccommodationCommand extends EditCommand {
             return Optional.ofNullable(phone);
         }
 
-        public void setCost(Cost cost) {
-            this.cost = cost;
-        }
-
-        public Optional<Cost> getCost() {
-            return Optional.ofNullable(cost);
-        }
-
         public void setTags(Set<Tag> tags) {
             this.tags = (tags != null) ? new HashSet<>(tags) : null;
         }
@@ -220,7 +231,6 @@ public class EditAccommodationCommand extends EditCommand {
             return getName().equals(e.getName())
                     && getPhone().equals(e.getPhone())
                     && getAddress().equals(e.getAddress())
-                    && getCost().equals(e.getCost())
                     && getTags().equals(e.getTags());
         }
     }

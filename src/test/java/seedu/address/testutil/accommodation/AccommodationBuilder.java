@@ -3,11 +3,10 @@ package seedu.address.testutil.accommodation;
 import java.util.HashSet;
 import java.util.Set;
 
+import seedu.address.model.accommodation.Accommodation;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.field.Address;
-import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 import seedu.address.testutil.contact.ContactBuilder;
@@ -22,13 +21,11 @@ public class AccommodationBuilder {
 
     public static final String DEFAULT_ACCOMMODATION_PHONE = "91170081";
     public static final String DEFAULT_ACCOMMODATION_EMAIL = "sam1987@gmail.com";
-    public static final String DEFAULT_COST = "1.00";
     public static final String[] DEFAULT_ACCOMMODATION_TAGS = {"Jurong", "Cool", "Cheap"};
 
     private Name name;
     private Address address;
     private Contact contact;
-    private Cost cost;
     private Set<Tag> tags;
 
     public AccommodationBuilder() {
@@ -36,7 +33,6 @@ public class AccommodationBuilder {
         address = new Address(DEFAULT_ADDRESS);
         contact = new ContactBuilder().withName(DEFAULT_NAME).withPhone(DEFAULT_ACCOMMODATION_PHONE)
                 .withEmail(DEFAULT_ACCOMMODATION_EMAIL).withAddress(DEFAULT_ADDRESS).build();
-        cost = new Cost(DEFAULT_COST);
         tags = SampleDataUtil.getTagSet(DEFAULT_ACCOMMODATION_TAGS);
     }
 
@@ -47,7 +43,6 @@ public class AccommodationBuilder {
         name = accommodationToCopy.getName();
         address = accommodationToCopy.getAddress();
         contact = accommodationToCopy.getContact().orElse(null);
-        cost = accommodationToCopy.getCost().orElse(null);
         tags = new HashSet<>(accommodationToCopy.getTags());
     }
 
@@ -87,14 +82,6 @@ public class AccommodationBuilder {
     }
 
     /**
-     * Sets the {@code Cost} of the {@code Accommodation} that we are building.
-     */
-    public AccommodationBuilder withCost(Cost cost) {
-        this.cost = cost;
-        return this;
-    }
-
-    /**
      * Parses the {@code tags} into a {@code Set<Tag>} and set it to the {@code Accommodation} that we are building.
      */
     public AccommodationBuilder withTags(String ... tags) {
@@ -103,7 +90,7 @@ public class AccommodationBuilder {
     }
 
     public Accommodation build() {
-        return new Accommodation(name, address, contact, cost, tags);
+        return new Accommodation(name, address, contact, tags);
     }
 
 }

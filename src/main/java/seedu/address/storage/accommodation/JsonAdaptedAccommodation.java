@@ -10,11 +10,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.accommodation.Accommodation;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.field.Address;
-import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
 import seedu.address.storage.JsonAdaptedTag;
 import seedu.address.storage.contact.JsonAdaptedContact;
@@ -29,7 +28,6 @@ public class JsonAdaptedAccommodation {
     private final String name;
     private final String address;
     private final JsonAdaptedContact contact;
-    private final String cost;
     private final List<JsonAdaptedTag> tagged = new ArrayList<>();
 
     /**
@@ -37,12 +35,10 @@ public class JsonAdaptedAccommodation {
      */
     @JsonCreator
     public JsonAdaptedAccommodation(@JsonProperty("name") String name, @JsonProperty("address") String address,
-            @JsonProperty("contact") JsonAdaptedContact contact, @JsonProperty("cost") String cost,
-            @JsonProperty("tagged") List<JsonAdaptedTag> tagged) {
+            @JsonProperty("contact") JsonAdaptedContact contact, @JsonProperty("tagged") List<JsonAdaptedTag> tagged) {
         this.name = name;
         this.address = address;
         this.contact = contact;
-        this.cost = cost;
         if (tagged != null) {
             this.tagged.addAll(tagged);
         }
@@ -55,7 +51,6 @@ public class JsonAdaptedAccommodation {
         name = source.getName().toString();
         address = source.getAddress().toString();
         contact = source.getContact().isPresent() ? new JsonAdaptedContact(source.getContact().get()) : null;
-        cost = source.getCost().isPresent() ? source.getCost().get().toString() : null;
         tagged.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -87,10 +82,8 @@ public class JsonAdaptedAccommodation {
 
         final Contact modelContact = (contact == null) ? null : contact.toModelType();
 
-        final Cost modelCost = cost == null ? null : new Cost(cost);
-
         final Set<Tag> modelTags = new HashSet<>(accommodationTags);
-        return new Accommodation(modelName, modelAddress, modelContact, modelCost, modelTags);
+        return new Accommodation(modelName, modelAddress, modelContact, modelTags);
     }
 
 }

@@ -9,13 +9,13 @@ import java.util.function.Predicate;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.index.Index;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
 
 /**
  * The API of the Model component.
@@ -104,6 +104,11 @@ public interface Model {
     ReadOnlyAccommodation getAccommodations();
 
     /**
+     * Returns the index of the accommodation if found. Else returns -1.
+     */
+    Optional<Index> getAccommodationIndex(Accommodation accommodation);
+
+    /**
      * Returns true if an accommodation with the same identity as {@code accommodation} exists in the
      * AccommodationManager.
      */
@@ -160,6 +165,11 @@ public interface Model {
     ReadOnlyActivity getActivities();
 
     /**
+     * Returns the index of the activity if found. Else returns -1.
+     */
+    Optional<Index> getActivityIndex(Activity activity);
+
+    /**
      * Returns true if a activity with the same identity as {@code activity} exists in the ActivityManager.
      */
     boolean hasActivity(Activity activity);
@@ -213,6 +223,11 @@ public interface Model {
      * Returns the ContactManager
      */
     ReadOnlyContact getContacts();
+
+    /**
+     * Returns the index of the contact if found. Else returns index of -1.
+     */
+    Optional<Index> getContactIndex(Contact contact);
 
     /**
      * Returns true if a contacts with the same identity as {@code contacts} exists in the contact list.

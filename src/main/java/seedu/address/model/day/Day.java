@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.model.activity.Activity;
 
 /**
  * Represents a Day in the travel planner's planner.
@@ -55,6 +56,14 @@ public class Day {
 
     public List<ActivityWithTime> findAllOverlap(ActivityWithTime activity) {
         return timetable.findAllOverlap(activity);
+    }
+
+    /**
+     * Checks whether the {@code Day} contains the {@code Activity}.
+     */
+    public boolean hasActivity(Activity activity) {
+        return timetable.getActivitiesWithTime().stream()
+                .anyMatch(x -> x.getActivity() == activity);
     }
 
     /**

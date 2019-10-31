@@ -10,6 +10,8 @@ import java.util.List;
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
+import seedu.address.logic.commands.util.HelpExplanation;
 import seedu.address.model.Model;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
@@ -21,13 +23,14 @@ public class UnscheduleCommand extends Command {
 
     public static final String COMMAND_WORD = "unschedule";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + " "
-            + ": Unschedules all instances of an activity on a certain day. "
-            + "Parameters: INDEX (must be a positive integer) "
-            + PREFIX_DAY + "DAY\n"
-            + "Example: " + COMMAND_WORD
+    public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(COMMAND_WORD,
+            "Unschedules all instances of an activity on a certain day.",
+            COMMAND_WORD
+            + " INDEX (must be a positive integer) "
+            + PREFIX_DAY + "DAY\n",
+            COMMAND_WORD
             + " 2 "
-            + PREFIX_DAY + "3";
+            + PREFIX_DAY + "3");
 
     public static final String MESSAGE_UNSCHEDULE_TIME_SUCCESS = "Activity %d unscheduled from Day %d";
 

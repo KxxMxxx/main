@@ -1,7 +1,9 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.commands.util.CommandUtil.findIndexOfActivity;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DURATION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -17,13 +19,19 @@ import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
+import seedu.address.logic.commands.result.ResultInformation;
+import seedu.address.logic.commands.result.UiFocus;
+import seedu.address.logic.commands.util.HelpExplanation;
 import seedu.address.model.Model;
+import seedu.address.model.activity.Activity;
+import seedu.address.model.activity.Duration;
+import seedu.address.model.activity.Priority;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Cost;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -32,15 +40,21 @@ import seedu.address.model.tag.Tag;
 public class EditActivityCommand extends EditCommand {
     public static final String SECOND_COMMAND_WORD = "activity";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the activity identified "
-            + "by the index number used in the displayed activity list. "
-            + "Existing values will be overwritten by the input values.\n"
-            + "Parameters: INDEX (must be a positive integer) "
-            + "[" + PREFIX_NAME + "NAME] "
-            + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Example: " + COMMAND_WORD + " 1 "
-            + PREFIX_PHONE + "91234567 ";
+    public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD,
+            ": Edits the details of the activity identified "
+                    + "by the index number used in the displayed activity list. "
+                    + "Existing values will be overwritten by the input values.",
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
+                    + "INDEX(must be a positive integer) "
+                    + "[" + PREFIX_NAME + "NAME] "
+                    + "[" + PREFIX_ADDRESS + "ADDRESS] "
+                    + "[" + PREFIX_PHONE + "PHONE] "
+                    + "[" + PREFIX_DURATION + "DURATION] "
+                    + "[" + PREFIX_TAG + "TAG]...",
+            COMMAND_WORD + " " + SECOND_COMMAND_WORD + " 2 "
+                    + PREFIX_PHONE + "91234567 "
+    );
 
     public static final String MESSAGE_EDIT_ACTIVITY_SUCCESS = "Edited Activity: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
@@ -82,6 +96,7 @@ public class EditActivityCommand extends EditCommand {
         }
 
         Activity activityToEdit = lastShownList.get(index.getZeroBased());
+        Index activityToEditIndex = findIndexOfActivity(model, activityToEdit);
         Activity editedActivity = createEditedActivity(activityToEdit, editActivityDescriptor);
 
         if (!activityToEdit.isSameActivity(editedActivity) && model.hasActivity(editedActivity)) {
@@ -90,7 +105,23 @@ public class EditActivityCommand extends EditCommand {
 
         model.setActivity(activityToEdit, editedActivity);
         model.updateFilteredActivityList(PREDICATE_SHOW_ALL_ACTIVITIES);
-        return new CommandResult(String.format(MESSAGE_EDIT_ACTIVITY_SUCCESS, editedActivity));
+        Index editedActivityIndex = findIndexOfActivity(model, editedActivity);
+        return new CommandResult(
+            String.format(MESSAGE_EDIT_ACTIVITY_SUCCESS, editedActivity),
+            new ResultInformation[] {
+                new ResultInformation(
+                    activityToEdit,
+                    activityToEditIndex,
+                    "Edited Activity from:"
+                ),
+                new ResultInformation(
+                    editedActivity,
+                    editedActivityIndex,
+                    "To:"
+                )
+            },
+            new UiFocus[] { UiFocus.ACTIVITY, UiFocus.INFO }
+        );
     }
 
     /**
@@ -104,7 +135,8 @@ public class EditActivityCommand extends EditCommand {
         Name updatedName = editActivityDescriptor.getName().orElse(activityToEdit.getName());
         Address updatedAddress = editActivityDescriptor.getAddress().orElse(activityToEdit.getAddress());
         Contact updatedContact = editActivityDescriptor.getPhone().isPresent()
-                ? new Contact(updatedName, editActivityDescriptor.getPhone().get(), null, null, new HashSet<>())
+                ? new Contact(updatedName, editActivityDescriptor.getPhone().get(), null, null,
+                new HashSet<>())
                 : activityToEdit.getContact().isPresent()
                     ? activityToEdit.getContact().get()
                     : null;
@@ -112,8 +144,11 @@ public class EditActivityCommand extends EditCommand {
                 ? editActivityDescriptor.getCost().get()
                 : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
+        Duration updatedDuration = editActivityDescriptor.getDuration().orElse(activityToEdit.getDuration());
+        Priority updatedPriority = editActivityDescriptor.getPriority().orElse(activityToEdit.getPriority());
 
-        return new Activity(updatedName, updatedAddress, updatedContact, updatedCost, updatedTags);
+        return new Activity(updatedName, updatedAddress, updatedContact, updatedCost, updatedTags, updatedDuration,
+                updatedPriority);
     }
 
     @Override
@@ -145,8 +180,11 @@ public class EditActivityCommand extends EditCommand {
         private Phone phone;
         private Cost cost;
         private Set<Tag> tags;
+        private Duration duration;
+        private Priority priority;
 
-        public EditActivityDescriptor() {}
+        public EditActivityDescriptor() {
+        }
 
         public EditActivityDescriptor(EditActivityDescriptor toCopy) {
             setName(toCopy.name);
@@ -154,10 +192,12 @@ public class EditActivityCommand extends EditCommand {
             setPhone(toCopy.phone);
             setCost(toCopy.cost);
             setTags(toCopy.tags);
+            setDuration(toCopy.duration);
+            setPriority(toCopy.priority);
         }
 
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, address, phone, tags);
+            return CollectionUtil.isAnyNonNull(name, address, phone, tags, cost, duration, priority);
         }
 
         public void setName(Name name) {
@@ -200,6 +240,22 @@ public class EditActivityCommand extends EditCommand {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        public void setDuration(Duration duration) {
+            this.duration = duration;
+        }
+
+        public Optional<Duration> getDuration() {
+            return Optional.ofNullable(duration);
+        }
+
+        public void setPriority(Priority priority) {
+            this.priority = priority;
+        }
+
+        public Optional<Priority> getPriority() {
+            return Optional.ofNullable(priority);
+        }
+
         @Override
         public boolean equals(Object other) {
             // short circuit if same object
@@ -218,7 +274,10 @@ public class EditActivityCommand extends EditCommand {
             return getName().equals(e.getName())
                     && getPhone().equals(e.getPhone())
                     && getAddress().equals(e.getAddress())
-                    && getTags().equals(e.getTags());
+                    && getCost().equals(e.getCost())
+                    && getTags().equals(e.getTags())
+                    && getDuration().equals(e.getDuration())
+                    && getPriority().equals(e.getPriority());
         }
     }
 }

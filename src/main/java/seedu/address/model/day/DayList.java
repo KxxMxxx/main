@@ -3,18 +3,19 @@ package seedu.address.model.day;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.day.exceptions.DayNotFoundException;
-import seedu.address.model.day.exceptions.DuplicateDayException;
 
 /**
- * Itinerary class helps to manage the list of days in an Planner.
+ * DayList class helps to manage the list of days in an Planner.
  */
-public class UniqueDayList implements Iterable<Day> {
+public class DayList implements Iterable<Day> {
     private final ObservableList<Day>
             internalList = FXCollections.observableArrayList();
     private final ObservableList<Day> internalUnmodifiableList =
@@ -33,10 +34,7 @@ public class UniqueDayList implements Iterable<Day> {
      */
     public void add(Day d) {
         requireNonNull(d);
-
-        if (!contains(d)) {
-            internalList.add(d);
-        }
+        internalList.add(d);
     }
 
     /**
@@ -50,21 +48,16 @@ public class UniqueDayList implements Iterable<Day> {
         }
     }
 
-    public void setDays(UniqueDayList replacement) {
+    public void setDays(DayList replacement) {
         requireNonNull(replacement);
         internalList.setAll(replacement.internalList);
     }
 
     /**
      * Replaces the contents of this list with {@code days}.
-     * {@code days} must not contain duplicate day.
      */
     public void setDays(List<Day> days) {
         requireAllNonNull(days);
-        if (!daysAreUnique(days)) {
-            throw new DuplicateDayException();
-        }
-
         internalList.setAll(days);
     }
 
@@ -82,11 +75,6 @@ public class UniqueDayList implements Iterable<Day> {
         if (index == -1) {
             throw new DayNotFoundException();
         }
-
-        if (!target.isSameDay(editedDay) && contains(editedDay)) {
-            throw new DuplicateDayException();
-        }
-
         internalList.set(index, editedDay);
     }
 
@@ -99,6 +87,16 @@ public class UniqueDayList implements Iterable<Day> {
         if (!internalList.remove(toRemove)) {
             throw new DayNotFoundException();
         }
+    }
+
+    public List<Day> getDays(Activity activity) {
+        List<Day> listOfDays = new ArrayList<>();
+        for (Day day : internalList) {
+            if (day.hasActivity(activity)) {
+                listOfDays.add(day);
+            }
+        }
+        return listOfDays;
     }
 
     /**
@@ -116,26 +114,12 @@ public class UniqueDayList implements Iterable<Day> {
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
-                || (other instanceof UniqueDayList // instanceof handles nulls
-                && internalList.equals(((UniqueDayList) other).internalList));
+                || (other instanceof DayList // instanceof handles nulls
+                && internalList.equals(((DayList) other).internalList));
     }
 
     @Override
     public int hashCode() {
         return internalList.hashCode();
-    }
-
-    /**
-     * Returns true if {@code activities} contains only unique activities.
-     */
-    private boolean daysAreUnique(List<Day> days) {
-        for (int i = 0; i < days.size() - 1; i++) {
-            for (int j = i + 1; j < days.size(); j++) {
-                if (days.get(i).isSameDay(days.get(j))) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

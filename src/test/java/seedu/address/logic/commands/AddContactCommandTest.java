@@ -20,6 +20,7 @@ import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.commands.result.CommandResult;
 import seedu.address.model.ContactManager;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAccommodation;
@@ -27,13 +28,13 @@ import seedu.address.model.ReadOnlyActivity;
 import seedu.address.model.ReadOnlyContact;
 import seedu.address.model.ReadOnlyItinerary;
 import seedu.address.model.ReadOnlyUserPrefs;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.testutil.contact.ContactBuilder;
 
 public class AddContactCommandTest {
@@ -139,6 +140,11 @@ public class AddContactCommandTest {
         }
 
         @Override
+        public Optional<Index> getAccommodationIndex(Accommodation accommodation) {
+            throw new AssertionError("This method should not be called.");
+        };
+
+        @Override
         public void deleteAccommodation(Accommodation target) {
             throw new AssertionError("This method should not be called.");
         }
@@ -195,6 +201,11 @@ public class AddContactCommandTest {
         }
 
         @Override
+        public Optional<Index> getActivityIndex(Activity activity) {
+            throw new AssertionError("This method should not be called.");
+        };
+
+        @Override
         public void deleteActivity(Activity target) {
             throw new AssertionError("This method should not be called.");
         }
@@ -239,6 +250,11 @@ public class AddContactCommandTest {
         public boolean hasContact(Contact contact) {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public Optional<Index> getContactIndex(Contact contact) {
+            throw new AssertionError("This method should not be called.");
+        };
 
         @Override
         public boolean hasPhone(Phone phone) {
@@ -396,6 +412,12 @@ public class AddContactCommandTest {
         public boolean hasContact(Contact contact) {
             requireNonNull(contact);
             return contactsAdded.stream().anyMatch(contact::isSameContact);
+        }
+
+        @Override
+        public Optional<Index> getContactIndex(Contact contact) {
+            requireNonNull(contact);
+            return Optional.of(Index.fromZeroBased(contactsAdded.indexOf(contact)));
         }
 
         @Override
