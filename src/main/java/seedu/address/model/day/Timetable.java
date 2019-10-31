@@ -42,9 +42,9 @@ public class Timetable {
     /**
      * Find the next activity in the list such that there is no overlaps unless the activity is the last in the list.
      */
-    public Optional<ActivityWithTime> findNextNoOverlap(int index) {
-        ActivityWithTime currAct = timetable.get(index);
-        for (int i = index + 1; i < timetable.size(); i++) {
+    public Optional<ActivityWithTime> findNextNoOverlap(Index index) {
+        ActivityWithTime currAct = timetable.get(index.getZeroBased());
+        for (int i = index.getZeroBased() + 1; i < timetable.size(); i++) {
             ActivityWithTime nextAct = timetable.get(i);
             if (!currAct.isOverlapping(nextAct)) {
                 return Optional.of(nextAct);

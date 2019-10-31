@@ -50,7 +50,7 @@ public class Day {
         this.timetable.removeActivityWithTime(toRemove);
     }
 
-    public Optional<ActivityWithTime> findNextActNoOverlap(int index) {
+    public Optional<ActivityWithTime> findNextActNoOverlap(Index index) {
         return timetable.findNextNoOverlap(index);
     }
 

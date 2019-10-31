@@ -75,7 +75,7 @@ public class OptimiseBudgetCommand extends Command {
 
         for (int i = 0; i < activities.size(); i++) {
             ActivityWithTime currAct = activities.get(i);
-            Optional<ActivityWithTime> nextAct = day.findNextActNoOverlap(i);
+            Optional<ActivityWithTime> nextAct = day.findNextActNoOverlap(Index.fromZeroBased(i));
             nextAct.ifPresentOrElse(x -> {
                 List<ActivityWithTime> neighbours = findNeighbours(day, x);
                 adjList.put(currAct, neighbours);
