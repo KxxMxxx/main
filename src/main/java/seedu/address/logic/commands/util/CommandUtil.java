@@ -5,8 +5,8 @@ import java.util.Optional;
 import seedu.address.commons.core.index.Index;
 import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 
 /**
  * Helper functions for commands.

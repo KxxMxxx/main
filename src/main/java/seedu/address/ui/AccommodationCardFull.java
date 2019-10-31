@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
 import seedu.address.model.contact.Contact;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
+import seedu.address.model.accommodation.Accommodation;
 
 
 /**

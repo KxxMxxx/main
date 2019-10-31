@@ -8,7 +8,7 @@ import seedu.address.logic.commands.EditAccommodationCommand.EditAccommodationDe
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
+import seedu.address.model.accommodation.Accommodation;
 import seedu.address.model.tag.Tag;
 
 /**

@@ -10,7 +10,7 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.model.day.exceptions.DayNotFoundException;
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.activity.Activity;
 
 /**
  * DayList class helps to manage the list of days in an Planner.

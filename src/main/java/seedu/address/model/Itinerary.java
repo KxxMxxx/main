@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 import seedu.address.model.day.Day;
 import seedu.address.model.day.DayList;
 import seedu.address.model.field.Name;
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.activity.Activity;
 
 
 /**

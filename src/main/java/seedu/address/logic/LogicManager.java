@@ -26,8 +26,8 @@ import seedu.address.model.ReadOnlyContact;
 import seedu.address.model.ReadOnlyItinerary;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.day.Day;
-import seedu.address.model.itineraryitem.accommodation.Accommodation;
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.accommodation.Accommodation;
+import seedu.address.model.activity.Activity;
 import seedu.address.storage.Storage;
 
 /**

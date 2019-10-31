@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.day.ActivityWithTime;
 import seedu.address.model.day.Day;
-import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.activity.Activity;
 import seedu.address.storage.activity.JsonAdaptedActivity;
 
 /**
